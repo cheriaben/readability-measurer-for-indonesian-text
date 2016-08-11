@@ -1,0 +1,154 @@
+<?xml version="1.0" ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<!-- saved from url=(0017)http://localhost/ -->
+<script language="JavaScript" src="../../../../displayToc.js"></script>
+<script language="JavaScript" src="../../../../tocParas.js"></script>
+<script language="JavaScript" src="../../../../tocTab.js"></script>
+<link rel="stylesheet" type="text/css" href="../../../../scineplex.css">
+<title></title>
+<link rel="stylesheet" href="../../../../Active.css" type="text/css" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:" />
+</head>
+
+<body>
+
+
+
+<ul id="index">
+  <li><a href="#NAME">NAME</a></li>
+  <li><a href="#SYNOPSIS">SYNOPSIS</a></li>
+  <li><a href="#DESCRIPTION">DESCRIPTION</a></li>
+  <li><a href="#ALGORITHM">ALGORITHM</a></li>
+  <li><a href="#FUNCTIONS">FUNCTIONS</a></li>
+  <li><a href="#Acronym-Abbreviations-list">Acronym/Abbreviations list</a></li>
+  <li><a href="#FUTURE-WORK">FUTURE WORK</a></li>
+  <li><a href="#SEE-ALSO">SEE ALSO</a></li>
+  <li><a href="#AUTHOR">AUTHOR</a></li>
+  <li><a href="#COPYRIGHT">COPYRIGHT</a></li>
+</ul>
+
+<h1 id="NAME">NAME</h1>
+
+<p>Lingua::EN::Sentence - Module for splitting text into sentences.</p>
+
+<h1 id="SYNOPSIS">SYNOPSIS</h1>
+
+<pre><code>        <span class="keyword">use</span> <span class="variable">Lingua::EN::Sentence</span> <span class="string">qw( get_sentences add_acronyms )</span><span class="operator">;</span>
+        
+        <span class="variable">add_acronyms</span><span class="operator">(</span><span class="string">'lt'</span><span class="operator">,</span><span class="string">'gen'</span><span class="operator">);</span>               <span class="comment">## adding support for 'Lt. Gen.'</span>
+        <span class="keyword">my</span> <span class="variable">$sentences</span><span class="operator">=</span><span class="variable">get_sentences</span><span class="operator">(</span><span class="variable">$text</span><span class="operator">);</span>     <span class="comment">## Get the sentences.</span>
+        <span class="keyword">foreach</span> <span class="keyword">my</span> <span class="variable">$sentence</span> <span class="operator">(</span><span class="variable">@$sentences</span><span class="operator">)</span> <span class="operator">{</span>
+                <span class="comment">## do something with $sentence</span>
+        <span class="operator">}</span>
+</code></pre>
+
+<h1 id="DESCRIPTION">DESCRIPTION</h1>
+
+<p>The <code>Lingua::EN::Sentence</code> module contains the function get_sentences, which splits text into its constituent sentences, based on a regular expression and a list of abbreviations (built in and given).</p>
+
+<p>Certain well know exceptions, such as abreviations, may cause incorrect segmentations. But some of them are already integrated into this code and are being taken care of. Still, if you see that there are words causing the get_sentences() to fail, you can add those to the module, so it notices them.</p>
+
+<h1 id="ALGORITHM">ALGORITHM</h1>
+
+<p>Basically, I use a &#39;brute&#39; regular expression to split the text into sentences. (Well, nothing is yet split - I just mark the end-of-sentence). Then I look into a set of rules which decide when an end-of-sentence is justified and when it&#39;s a mistake. In case of a mistake, the end-of-sentence mark is removed.</p>
+
+<p>What are such mistakes? Cases of abbreviations, for example. I have a list of such abbreviations (Please see `Acronym/Abbreviations list&#39; section), and more general rules (for example, the abbreviations &#39;i.e.&#39; and &#39;.e.g.&#39; need not to be in the list as a special rule takes care of all single letter abbreviations).</p>
+
+<h1 id="FUNCTIONS">FUNCTIONS</h1>
+
+<p>All functions used should be requested in the &#39;use&#39; clause. None is exported by default.</p>
+
+<dl>
+
+<dt id="get_sentences-text">get_sentences( $text )</dt>
+<dd>
+
+<p>The get_sentences function takes a scalar containing ascii text as an argument and returns a reference to an array of sentences that the text has been split into. Returned sentences will be trimmed (beginning and end of sentence) of white space. Strings with no alpha-numeric characters in them, won&#39;t be returned as sentences.</p>
+
+</dd>
+<dt id="add_acronyms-acronyms">add_acronyms( @acronyms )</dt>
+<dd>
+
+<p>This function is used for adding acronyms not supported by this code. The input should be regular expressions for matching the desired acronyms, but should not include the final period (<code>.</code>). So, for example, <code>blv?d</code> matches <code>blvd.</code> and <code>bld.</code>. <code>a\.mlf</code> will match <code>a.mlf.</code>. You do not need to bother with acronyms consisting of single letters and dots (e.g. &quot;U.S.A.&quot;), as these are found automatically. Note also that acronyms are searched for on a case insensitive basis.</p>
+
+<p>Please see`Acronym/Abbreviations list&#39; section for the abbreviations already supported by this module.</p>
+
+</dd>
+<dt id="get_acronyms">get_acronyms( )</dt>
+<dd>
+
+<p>This function will return the defined list of acronyms.</p>
+
+</dd>
+<dt id="set_acronyms-my_acronyms">set_acronyms( @my_acronyms )</dt>
+<dd>
+
+<p>This function replaces the predefined acronym list with the given list. See <a href="#add_acronyms">&quot;add_acronyms&quot;</a> for details on the input specifications.</p>
+
+</dd>
+<dt id="get_EOS">get_EOS( )</dt>
+<dd>
+
+<p>This function returns the value of the string used to mark the end of sentence. You might want to see what it is, and to make sure your text doesn&#39;t contain it. You can use set_EOS() to alter the end-of-sentence string to whatever you desire.</p>
+
+</dd>
+<dt id="set_EOS-new_EOS_string">set_EOS( $new_EOS_string )</dt>
+<dd>
+
+<p>This function alters the end-of-sentence string used to mark the end of sentences.</p>
+
+</dd>
+<dt id="set_locale-new_locale-Receives-language-locale-in-the-form-language.country.character-set-for-example:-fr_CA.ISO8859-1-for-Canadian-French-using-character-set-ISO8859-1">set_locale( $new_locale ) Receives language locale in the form language.country.character-set for example: &quot;fr_CA.ISO8859-1&quot; for Canadian French using character set ISO8859-1.</dt>
+<dd>
+
+<p>Returns a reference to a hash containing the current locale formatting values. Returns undef if got undef.</p>
+
+<p>The following will set the LC_COLLATE behaviour to Argentinian Spanish. NOTE: The naming and availability of locales depends on your operating sysem. Please consult the perllocale manpage for how to find out which locales are available in your system.</p>
+
+<p>$loc = set_locale( &quot;es_AR.ISO8859-1&quot; );</p>
+
+<p>This actually does this:</p>
+
+<p>$loc = setlocale( LC_ALL, &quot;es_AR.ISO8859-1&quot; );</p>
+
+</dd>
+</dl>
+
+<h1 id="Acronym-Abbreviations-list">Acronym/Abbreviations list</h1>
+
+<p>You can use the get_acronyms() function to get acronyms. It has become too long to specify in the documentation.</p>
+
+<p>If I come across a good general-purpose list - I&#39;ll incorporate it into this module. Feel free to suggest such lists.</p>
+
+<h1 id="FUTURE-WORK">FUTURE WORK</h1>
+
+<pre><code>        [1] Object Oriented like usage
+        [2] Supporting more than just English/French
+        [3] Code optimization. Currently everything is RE based and not so optimized RE
+        [4] Possibly use more semantic heuristics for detecting a beginning of a sentence</code></pre>
+
+<h1 id="SEE-ALSO">SEE ALSO</h1>
+
+<pre><code>        Text::Sentence</code></pre>
+
+<h1 id="AUTHOR">AUTHOR</h1>
+
+<p>Shlomo Yona shlomo@cs.haifa.ac.il</p>
+
+<p>Currently being maintained by Kim Ryan, kimryan at CPAN d o t org</p>
+
+<h1 id="COPYRIGHT">COPYRIGHT</h1>
+
+<p>Copyright (c) 2001-2015 Shlomo Yona. All rights reserved.</p>
+
+<p>This library is free software. You can redistribute it and/or modify it under the same terms as Perl itself.</p>
+
+
+</body>
+
+</html>
+
+
